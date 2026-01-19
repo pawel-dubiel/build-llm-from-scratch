@@ -5,20 +5,21 @@ import os
 
 def train():
     print("Initializing model configuration...")
-    # Configuration
-    # Small model for demonstration (approx 124M params is standard GPT-2 Small)
-    # n_layer=12, n_head=12, n_embd=768
+    print("Loading tokenizer...")
+    tokenizer = PreTrainedTokenizerFast(tokenizer_file="tokenizer.json")
+    tokenizer.add_special_tokens({'pad_token': '<|endoftext|>'})
+
     config = GPT2Config(
-        vocab_size=50257, # matches tokenizer
+        vocab_size=len(tokenizer), # Dynamic vocab size
         n_positions=128,  # matches dataset chunking
         n_ctx=128,
-        n_embd=768,
-        n_layer=12,
-        n_head=12,
+        n_embd=192, # Nano size
+        n_layer=4,  
+        n_head=4,   
+        pad_token_id=tokenizer.pad_token_id,
     )
-    
-        n_head=12,
-    )
+
+
     
     # Check for existing checkpoint
     # If a checkpoint exists, load weights from there to continue training.
