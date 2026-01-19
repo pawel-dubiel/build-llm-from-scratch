@@ -17,7 +17,31 @@ def train():
         n_head=12,
     )
     
-    model = GPT2LMHeadModel(config)
+        n_head=12,
+    )
+    
+    # Check for existing checkpoint
+    # If a checkpoint exists, load weights from there to continue training.
+    # Otherwise, initialize from scratch.
+    last_checkpoint = None
+    if os.path.exists("checkpoints") and len(os.listdir("checkpoints")) > 0:
+        # Simple heuristic: look for 'checkpoint-X' folders
+        checkpoints = [d for d in os.listdir("checkpoints") if d.startswith("checkpoint-")]
+        if checkpoints:
+            checkpoints.sort(key=lambda x: int(x.split("-")[1]))
+            last_checkpoint = os.path.join("checkpoints", checkpoints[-1])
+            print(f"Found checkpoint: {last_checkpoint}. Will resume training.")
+    
+    training_from_scratch = True
+    if last_checkpoint:
+        try:
+            model = GPT2LMHeadModel.from_pretrained(last_checkpoint)
+            training_from_scratch = False
+        except:
+            print("Failed to load checkpoint, starting from scratch.")
+            model = GPT2LMHeadModel(config)
+    else:
+        model = GPT2LMHeadModel(config)
     
     # Check availability (Trainer handles this internally usually, but good to verify)
     if torch.backends.mps.is_available():
