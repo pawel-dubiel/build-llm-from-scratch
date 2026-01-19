@@ -107,7 +107,13 @@ def train():
     )
     
     print("Starting training...")
-    trainer.train()
+    print("Starting training...")
+    # Passing resume_from_checkpoint=True tells Trainer to look for the latest checkpoint in output_dir
+    # However, since we manually loaded the model weights above if found, 
+    # we can just call train(). But ideally, we let Trainer handle the resuming of optimizer states too.
+    
+    # Best practice: if we found a checkpoint path, pass it here.
+    trainer.train(resume_from_checkpoint=last_checkpoint if last_checkpoint else None)
     
     print("Saving final model...")
     trainer.save_model("checkpoints/final_model")
