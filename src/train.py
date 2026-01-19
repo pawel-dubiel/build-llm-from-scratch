@@ -52,7 +52,7 @@ def train():
     # Note: MPS usage is automatic in newer Transformers if available.
     training_args = TrainingArguments(
         output_dir="checkpoints",
-        overwrite_output_dir=True,
+        overwrite_output_dir=False, # Changed to False to prevent deleting history
         num_train_epochs=1,
         per_device_train_batch_size=8, # Try 8 for M3, reduce if OOM
         per_device_eval_batch_size=8,
