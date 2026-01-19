@@ -50,12 +50,11 @@ def train():
     else:
         print("MPS not available. Using CPU (will be slow).")
         
-    # Load tokenizer (needed for data collator padding)
-    print("Loading tokenizer...")
-    tokenizer = PreTrainedTokenizerFast(tokenizer_file="tokenizer.json")
-    tokenizer.add_special_tokens({'pad_token': '<|endoftext|>'})
+    # Tokenizer already loaded above
+    # tokenizer = PreTrainedTokenizerFast(tokenizer_file="tokenizer.json")
+    # tokenizer.add_special_tokens({'pad_token': '<|endoftext|>'})
     
-    # Ensure pad token is set in model config
+    # Ensure pad token is set in model config (already set in init, but good to double check)
     model.config.pad_token_id = tokenizer.pad_token_id
 
     # Load dataset
@@ -78,18 +77,19 @@ def train():
     training_args = TrainingArguments(
         output_dir="checkpoints",
         overwrite_output_dir=False, # Changed to False to prevent deleting history
-        num_train_epochs=1,
+        num_train_epochs=3, # Increase epochs for real training
         per_device_train_batch_size=8, # Try 8 for M3, reduce if OOM
         per_device_eval_batch_size=8,
-        max_steps=30, # For demo purposes, run short training
-        save_steps=50,
+        # max_steps=30, # REMOVED: Run for full epochs
+        max_steps=100,
+        save_steps=100,
         save_total_limit=2,
         logging_steps=1,
         eval_strategy="steps",
         eval_steps=50,
         learning_rate=5e-4,
         weight_decay=0.01,
-        use_cpu=True,
+        use_cpu=False,
         push_to_hub=False,
         report_to="none", # Disable wandb/etc for this simple setup
         dataloader_pin_memory=False,
@@ -108,7 +108,7 @@ def train():
     )
     
     print("Starting training...")
-    print("Starting training...")
+
     # Passing resume_from_checkpoint=True tells Trainer to look for the latest checkpoint in output_dir
     # However, since we manually loaded the model weights above if found, 
     # we can just call train(). But ideally, we let Trainer handle the resuming of optimizer states too.
