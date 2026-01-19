@@ -1,0 +1,15 @@
+# General
+.DS_Store
+__pycache__/
+*.py[cod]
+
+# Virtual Environment
+venv/
+
+# Project Data & Artifacts
+data/
+checkpoints/
+
+# IDEs
+.vscode/
+.idea/
